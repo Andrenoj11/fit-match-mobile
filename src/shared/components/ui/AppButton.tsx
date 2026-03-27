@@ -1,4 +1,4 @@
-import { Pressable, Text } from "react-native";
+import { ActivityIndicator, Pressable, Text } from "react-native";
 
 import { colors } from "@/core/theme/colors";
 import { spacing } from "@/core/theme/spacing";
@@ -8,35 +8,46 @@ type AppButtonProps = {
   title: string;
   onPress: () => void;
   disabled?: boolean;
+  loading?: boolean;
 };
 
 export function AppButton({
   title,
   onPress,
   disabled = false,
+  loading = false,
 }: AppButtonProps) {
+  const isButtonDisabled = disabled || loading;
+
   return (
     <Pressable
       onPress={onPress}
-      disabled={disabled}
-      style={{
-        backgroundColor: disabled ? colors.border : colors.primary,
-        paddingHorizontal: 20,
+      disabled={isButtonDisabled}
+      style={({ pressed }) => ({
+        backgroundColor: isButtonDisabled
+          ? colors.surfaceMuted
+          : colors.primary,
+        paddingHorizontal: spacing.xl,
         paddingVertical: spacing.md,
-        borderRadius: spacing.md,
+        borderRadius: 14,
         minWidth: 180,
         alignItems: "center",
-      }}
+        opacity: pressed && !isButtonDisabled ? 0.9 : 1,
+      })}
     >
-      <Text
-        style={{
-          color: disabled ? colors.textSecondary : colors.primaryText,
-          fontWeight: typography.fontWeight.semibold,
-          fontSize: typography.fontSize.md,
-        }}
-      >
-        {title}
-      </Text>
+      {loading ? (
+        <ActivityIndicator color={colors.primaryText} />
+      ) : (
+        <Text
+          style={{
+            color: isButtonDisabled ? colors.textSecondary : colors.primaryText,
+            fontWeight: typography.fontWeight.semibold,
+            fontSize: typography.fontSize.md,
+          }}
+        >
+          {title}
+        </Text>
+      )}
     </Pressable>
   );
 }

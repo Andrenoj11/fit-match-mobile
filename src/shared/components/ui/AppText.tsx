@@ -29,10 +29,12 @@ export function AppText({
         ? {
             fontSize: typography.fontSize.sm,
             fontWeight: typography.fontWeight.regular,
+            lineHeight: 20,
           }
         : {
             fontSize: typography.fontSize.md,
-            fontWeight: typography.fontWeight.regular,
+            fontWeight: typography.fontWeight.medium,
+            lineHeight: 22,
           };
 
   return <Text style={[variantStyle, { color }, style]}>{children}</Text>;

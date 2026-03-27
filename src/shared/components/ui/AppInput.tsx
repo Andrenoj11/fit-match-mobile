@@ -13,15 +13,15 @@ export function AppInput(props: AppInputProps) {
         width: "100%",
         borderWidth: 1,
         borderColor: colors.border,
-        borderRadius: spacing.md,
-        backgroundColor: colors.white,
+        borderRadius: 14,
+        backgroundColor: colors.surface,
         paddingHorizontal: spacing.lg,
       }}
     >
       <TextInput
         placeholderTextColor={colors.textSecondary}
         style={{
-          height: 48,
+          height: 52,
           color: colors.text,
           fontSize: typography.fontSize.md,
           fontWeight: typography.fontWeight.regular,
