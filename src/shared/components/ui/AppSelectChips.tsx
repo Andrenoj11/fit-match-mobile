@@ -30,14 +30,15 @@ export function AppSelectChips({
           <Pressable
             key={option.value}
             onPress={() => onChange(option.value)}
-            style={{
+            style={({ pressed }) => ({
               paddingHorizontal: spacing.lg,
               paddingVertical: spacing.md,
-              borderRadius: spacing.md,
+              borderRadius: 14,
               borderWidth: 1,
               borderColor: isSelected ? colors.primary : colors.border,
-              backgroundColor: isSelected ? colors.primary : colors.white,
-            }}
+              backgroundColor: isSelected ? colors.primary : colors.surface,
+              opacity: pressed ? 0.92 : 1,
+            })}
           >
             <AppText
               style={{

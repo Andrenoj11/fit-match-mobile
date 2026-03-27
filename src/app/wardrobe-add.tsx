@@ -3,14 +3,16 @@ import { useState } from "react";
 import { View } from "react-native";
 
 import { useAppDispatch, useAppSelector } from "@/app/store/hooks";
+import { colors } from "@/core/theme/colors";
 import { spacing } from "@/core/theme/spacing";
 import { WardrobeCategory } from "@/features/wardrobe/api/wardrobe.types";
 import { wardrobeCategoryOptions } from "@/features/wardrobe/constants";
 import { addWardrobeItem } from "@/features/wardrobe/store/wardrobe.slice";
 import { AppButton } from "@/shared/components/ui/AppButton";
+import { AppCard } from "@/shared/components/ui/AppCard";
 import { AppHeader } from "@/shared/components/ui/AppHeader";
 import { AppInput } from "@/shared/components/ui/AppInput";
-import { AppScreen } from "@/shared/components/ui/AppScreen";
+import { AppScrollScreen } from "@/shared/components/ui/AppScrollScreen";
 import { AppSelectChips } from "@/shared/components/ui/AppSelectChips";
 import { AppText } from "@/shared/components/ui/AppText";
 
@@ -68,24 +70,35 @@ export default function AddWardrobeItemScreen() {
   }
 
   return (
-    <AppScreen>
+    <AppScrollScreen>
       <View style={{ gap: spacing.xl }}>
         <AppHeader
           title="Add Wardrobe Item"
-          subtitle="Tambahkan item dummy baru ke wardrobe"
+          subtitle="Add a new clothing piece to improve future outfit suggestions."
           actionLabel="Kembali ke Wardrobe"
           onPressAction={handleBackToWardrobe}
         />
 
+        <AppCard>
+          <AppText variant="body">New item details</AppText>
+          <AppText variant="caption">
+            Start with the essential information so the item can be used in
+            future looks.
+          </AppText>
+        </AppCard>
+
         <View style={{ gap: spacing.lg }}>
-          <AppInput
-            placeholder="Nama item, contoh: Blue Denim Jacket"
-            value={name}
-            onChangeText={setName}
-          />
+          <View style={{ gap: spacing.sm }}>
+            <AppText variant="caption">Item name</AppText>
+            <AppInput
+              placeholder="Contoh: Blue Denim Jacket"
+              value={name}
+              onChangeText={setName}
+            />
+          </View>
 
           <View style={{ gap: spacing.sm }}>
-            <AppText variant="caption">Pilih category</AppText>
+            <AppText variant="caption">Category</AppText>
             <AppSelectChips
               options={wardrobeCategoryOptions}
               value={category}
@@ -95,20 +108,34 @@ export default function AddWardrobeItemScreen() {
             />
           </View>
 
-          <AppInput
-            placeholder="Color, contoh: Blue"
-            value={color}
-            onChangeText={setColor}
-          />
+          <View style={{ gap: spacing.sm }}>
+            <AppText variant="caption">Color</AppText>
+            <AppInput
+              placeholder="Contoh: Blue"
+              value={color}
+              onChangeText={setColor}
+            />
+          </View>
 
-          <AppInput
-            placeholder="Brand (opsional)"
-            value={brand}
-            onChangeText={setBrand}
-          />
+          <View style={{ gap: spacing.sm }}>
+            <AppText variant="caption">Brand (optional)</AppText>
+            <AppInput
+              placeholder="Contoh: Fit Match"
+              value={brand}
+              onChangeText={setBrand}
+            />
+          </View>
 
           {!!successMessage && (
-            <AppText variant="caption">{successMessage}</AppText>
+            <AppCard
+              style={{
+                backgroundColor: colors.surfaceMuted,
+              }}
+            >
+              <AppText variant="caption" color={colors.success}>
+                {successMessage}
+              </AppText>
+            </AppCard>
           )}
         </View>
 
@@ -119,6 +146,6 @@ export default function AddWardrobeItemScreen() {
           loading={isSubmitting}
         />
       </View>
-    </AppScreen>
+    </AppScrollScreen>
   );
 }

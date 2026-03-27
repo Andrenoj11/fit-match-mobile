@@ -6,9 +6,12 @@ import { spacing } from "@/core/theme/spacing";
 import { WardrobeItemCard } from "@/features/wardrobe/components/WardrobeItemCard";
 import { useInitializeWardrobe } from "@/features/wardrobe/hooks/useInitializeWardrobe";
 import { AppButton } from "@/shared/components/ui/AppButton";
+import { AppCard } from "@/shared/components/ui/AppCard";
 import { AppHeader } from "@/shared/components/ui/AppHeader";
-import { AppScreen } from "@/shared/components/ui/AppScreen";
+import { AppScrollScreen } from "@/shared/components/ui/AppScrollScreen";
+import { AppText } from "@/shared/components/ui/AppText";
 import { EmptyStateCard } from "@/shared/components/ui/EmptyStateCard";
+
 export default function WardrobeScreen() {
   const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
   const wardrobeItems = useAppSelector((state) => state.wardrobe.items);
@@ -24,17 +27,35 @@ export default function WardrobeScreen() {
   }
 
   return (
-    <AppScreen>
+    <AppScrollScreen>
       <View style={{ gap: spacing.xl }}>
         <AppHeader
           title="Wardrobe"
           subtitle="Organize your clothing items for smarter outfit suggestions."
         />
 
+        <AppCard>
+          <AppText variant="body">Your wardrobe at a glance</AppText>
+          <AppText variant="caption">
+            Keep your items organized so future recommendations can stay
+            relevant and easy to explore.
+          </AppText>
+          <AppText variant="caption">
+            Total items: {wardrobeItems.length}
+          </AppText>
+        </AppCard>
+
         <AppButton
           title="Tambah Wardrobe Item"
           onPress={handleGoToAddWardrobe}
         />
+
+        <View style={{ gap: spacing.sm }}>
+          <AppText variant="body">Saved items</AppText>
+          <AppText variant="caption">
+            Clothing pieces currently available for matching.
+          </AppText>
+        </View>
 
         {!wardrobeItems.length && (
           <EmptyStateCard
@@ -53,6 +74,6 @@ export default function WardrobeScreen() {
           </View>
         )}
       </View>
-    </AppScreen>
+    </AppScrollScreen>
   );
 }
