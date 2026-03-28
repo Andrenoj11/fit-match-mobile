@@ -15,13 +15,16 @@ export function AppScrollScreen({
   contentContainerStyle,
 }: AppScrollScreenProps) {
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
+    <SafeAreaView
+      style={{ flex: 1, backgroundColor: colors.background }}
+      edges={["top", "left", "right"]}
+    >
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={[
           {
             padding: spacing.xl,
-            paddingBottom: spacing.xxl,
+            paddingBottom: spacing.xl,
             gap: spacing.xl,
           },
           contentContainerStyle,

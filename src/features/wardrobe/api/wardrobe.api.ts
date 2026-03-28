@@ -11,6 +11,7 @@ export async function getWardrobeItems(): Promise<WardrobeItem[]> {
       color: "White",
       imageUrl: "https://example.com/shirt.jpg",
       brand: "Fit Match",
+      source: "manual",
     },
     {
       id: "2",
@@ -19,6 +20,7 @@ export async function getWardrobeItems(): Promise<WardrobeItem[]> {
       color: "Black",
       imageUrl: "https://example.com/pants.jpg",
       brand: "Fit Match",
+      source: "manual",
     },
     {
       id: "3",
@@ -27,6 +29,7 @@ export async function getWardrobeItems(): Promise<WardrobeItem[]> {
       color: "White",
       imageUrl: "https://example.com/sneakers.jpg",
       brand: "Fit Match",
+      source: "manual",
     },
   ];
 }

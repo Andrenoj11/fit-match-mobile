@@ -1,10 +1,10 @@
 import { router } from "expo-router";
 import { useState } from "react";
 
-import { useAppDispatch } from "@/app/store/hooks";
 import { login } from "@/features/auth/api/auth.api";
 import { setAuth } from "@/features/auth/store/auth.slice";
 import { tokenStorage } from "@/services/storage/tokenStorage";
+import { useAppDispatch } from "@/store/hooks";
 
 export function useLoginForm() {
   const dispatch = useAppDispatch();

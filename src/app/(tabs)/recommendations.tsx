@@ -1,7 +1,6 @@
 import { Redirect, router, type Href } from "expo-router";
 import { View } from "react-native";
 
-import { useAppSelector } from "@/app/store/hooks";
 import { spacing } from "@/core/theme/spacing";
 import { RecommendationCard } from "@/features/recommendations/components/RecommendationCard";
 import { useRecommendations } from "@/features/recommendations/hooks/useRecommendations";
@@ -11,6 +10,7 @@ import { AppHeader } from "@/shared/components/ui/AppHeader";
 import { AppScrollScreen } from "@/shared/components/ui/AppScrollScreen";
 import { AppText } from "@/shared/components/ui/AppText";
 import { EmptyStateCard } from "@/shared/components/ui/EmptyStateCard";
+import { useAppSelector } from "@/store/hooks";
 
 export default function RecommendationsScreen() {
   const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
@@ -22,10 +22,6 @@ export default function RecommendationsScreen() {
     hasMinimumWardrobe,
   } = useRecommendations();
 
-  const handleGoToWardrobe = () => {
-    router.push("/wardrobe");
-  };
-
   if (!isAuthenticated) {
     return <Redirect href={"/login" as Href} />;
   }
@@ -35,47 +31,46 @@ export default function RecommendationsScreen() {
       <View style={{ gap: spacing.xl }}>
         <AppHeader
           title="Looks"
-          subtitle="Simple outfit ideas generated from the wardrobe items you already have."
+          subtitle="Curated outfit ideas based on the wardrobe pieces you already own."
         />
 
         <AppCard>
-          <AppText variant="body">Outfit suggestions overview</AppText>
+          <AppText variant="body">Your styling overview</AppText>
           <AppText variant="caption">
-            We build simple looks from the categories currently available in
-            your wardrobe.
+            These looks are generated from the wardrobe categories currently
+            available in your closet.
           </AppText>
-          <AppText variant="caption">Looks generated: {items.length}</AppText>
+          <AppText variant="caption">Looks ready: {items.length}</AppText>
         </AppCard>
 
         {isLoading && (
-          <AppText variant="caption">
-            Mengambil recommendations dummy...
-          </AppText>
+          <AppText variant="caption">Loading dummy recommendations...</AppText>
         )}
 
         {!!errorMessage && <AppText variant="caption">{errorMessage}</AppText>}
 
         {!isLoading && !items.length && !hasMinimumWardrobe && (
           <EmptyStateCard
-            title="Recommendation belum siap"
-            description={`Tambahkan category berikut terlebih dahulu: ${missingCategories
+            title="Recommendations are not ready yet"
+            description={`Add these categories first: ${missingCategories
               .map((category) => formatWardrobeCategory(category))
               .join(", ")}`}
-            actionLabel="Pergi ke Wardrobe"
-            onPressAction={handleGoToWardrobe}
+            actionLabel="Go to Wardrobe"
+            onPressAction={() => router.push("/wardrobe")}
           />
         )}
 
         {!isLoading && !!items.length && (
           <View style={{ gap: spacing.sm }}>
             <View style={{ gap: spacing.xs }}>
-              <AppText variant="body">Generated looks</AppText>
+              <AppText variant="body">Suggested looks</AppText>
               <AppText variant="caption">
-                Simple recommendations based on the items currently available.
+                Explore outfit combinations created from your available wardrobe
+                items.
               </AppText>
             </View>
 
-            <View style={{ gap: spacing.md }}>
+            <View style={{ gap: spacing.lg }}>
               {items.map((item) => (
                 <RecommendationCard key={item.id} item={item} />
               ))}

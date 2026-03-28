@@ -1,4 +1,4 @@
-import { Redirect, router, type Href } from "expo-router";
+import { Redirect, router, useLocalSearchParams, type Href } from "expo-router";
 import { useState } from "react";
 import { View } from "react-native";
 
@@ -6,8 +6,10 @@ import { colors } from "@/core/theme/colors";
 import { spacing } from "@/core/theme/spacing";
 import { WardrobeCategory } from "@/features/wardrobe/api/wardrobe.types";
 import { wardrobeCategoryOptions } from "@/features/wardrobe/constants";
-import { wardrobeMockImageOptions } from "@/features/wardrobe/mockImageOptions";
 import { addWardrobeItem } from "@/features/wardrobe/store/wardrobe.slice";
+import { approveImportDraft } from "@/features/wardrobe/store/wardrobeImport.slice";
+import { getAiConfidenceLabel } from "@/features/wardrobe/utils/aiConfidence";
+import { formatWardrobeCategory } from "@/features/wardrobe/utils/wardrobeFormatter";
 import { AppButton } from "@/shared/components/ui/AppButton";
 import { AppCard } from "@/shared/components/ui/AppCard";
 import { AppHeader } from "@/shared/components/ui/AppHeader";
@@ -16,32 +18,45 @@ import { AppInput } from "@/shared/components/ui/AppInput";
 import { AppScrollScreen } from "@/shared/components/ui/AppScrollScreen";
 import { AppSelectChips } from "@/shared/components/ui/AppSelectChips";
 import { AppText } from "@/shared/components/ui/AppText";
-import { ImageOptionCard } from "@/shared/components/ui/ImageOptionCard";
+import { MetaRow } from "@/shared/components/ui/MetaRow";
+import { StatusBadge } from "@/shared/components/ui/StatusBadge";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 
-export default function AddWardrobeItemScreen() {
+export default function WardrobeAiReviewScreen() {
   const dispatch = useAppDispatch();
   const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
 
-  const [selectedImageUri, setSelectedImageUri] = useState(
-    wardrobeMockImageOptions[0]?.uri ?? "",
+  const params = useLocalSearchParams<{
+    draftId?: string;
+    imageUri?: string;
+    predictedName?: string;
+    predictedCategory?: string;
+    predictedColor?: string;
+    predictedBrand?: string;
+    confidence?: string;
+  }>();
+  const confidenceValue = params.confidence ? Number(params.confidence) : null;
+  const confidenceMeta =
+    confidenceValue !== null ? getAiConfidenceLabel(confidenceValue) : null;
+  const confidencePercentage =
+    confidenceValue !== null ? Math.round(confidenceValue * 100) : null;
+  const [name, setName] = useState(params.predictedName ?? "");
+  const [category, setCategory] = useState<WardrobeCategory | "">(
+    (params.predictedCategory as WardrobeCategory) ?? "",
   );
-  const [name, setName] = useState("");
-  const [category, setCategory] = useState<WardrobeCategory | "">("");
-  const [color, setColor] = useState("");
-  const [brand, setBrand] = useState("");
+  const [color, setColor] = useState(params.predictedColor ?? "");
+  const [brand, setBrand] = useState(params.predictedBrand ?? "");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
 
-  const isSubmitDisabled =
-    !name.trim() || !category.trim() || !color.trim() || !selectedImageUri;
+  const isSubmitDisabled = !name.trim() || !category.trim() || !color.trim();
 
-  const handleBackToWardrobe = () => {
+  const handleBack = () => {
     router.back();
   };
 
-  const handleSubmit = async () => {
-    if (!name.trim() || !category || !color.trim() || !selectedImageUri) {
+  const handleSave = async () => {
+    if (!name.trim() || !category || !color.trim()) {
       return;
     }
 
@@ -57,14 +72,19 @@ export default function AddWardrobeItemScreen() {
           name: name.trim(),
           category,
           color: color.trim(),
-          imageUrl: selectedImageUri,
+          imageUrl:
+            params.imageUri ||
+            "https://picsum.photos/seed/wardrobe-ai-review/900/1200",
           brand: brand.trim() || undefined,
-          source: "manual",
+          source: "ai",
         }),
       );
 
-      setSuccessMessage("Wardrobe item added successfully (dummy)");
+      if (params.draftId) {
+        dispatch(approveImportDraft(params.draftId));
+      }
 
+      setSuccessMessage("Item saved successfully.");
       setTimeout(() => {
         router.replace("/wardrobe");
       }, 700);
@@ -81,44 +101,70 @@ export default function AddWardrobeItemScreen() {
     <AppScrollScreen>
       <View style={{ gap: spacing.xl }}>
         <AppHeader
-          title="Add Wardrobe Item"
-          subtitle="Add a new clothing piece to improve future outfit suggestions."
+          title="Review AI Labels"
+          subtitle="Review the detected details and adjust anything before saving this item."
           actionLabel="Back"
-          onPressAction={handleBackToWardrobe}
+          onPressAction={handleBack}
           actionVariant="back"
         />
 
         <AppCard>
-          <AppText variant="body">New item details</AppText>
+          <AppText variant="body">Mock AI result</AppText>
           <AppText variant="caption">
-            Start with the essential information so the item can be used in
-            future looks.
+            This preview simulates the future AI-assisted image analysis flow.
           </AppText>
-        </AppCard>
 
-        <AppCard>
-          <AppText variant="body">Selected image</AppText>
           <AppImagePreview
-            uri={selectedImageUri}
-            label="Selected Manual Image"
+            uri={params.imageUri}
+            label="AI Image Review"
             height={180}
           />
         </AppCard>
 
-        <View style={{ gap: spacing.sm }}>
-          <AppText variant="caption">Choose a mock image</AppText>
-          <View style={{ gap: spacing.md }}>
-            {wardrobeMockImageOptions.map((option) => (
-              <ImageOptionCard
-                key={option.uri}
-                label={option.label}
-                uri={option.uri}
-                isSelected={selectedImageUri === option.uri}
-                onPress={() => setSelectedImageUri(option.uri)}
-              />
-            ))}
-          </View>
-        </View>
+        <AppCard>
+          {confidenceMeta && confidencePercentage !== null ? (
+            <StatusBadge
+              label={`${confidenceMeta.label} · ${confidencePercentage}%`}
+              tone={confidenceMeta.tone}
+            />
+          ) : (
+            <StatusBadge label="AI suggestion" tone="neutral" />
+          )}
+          <AppText variant="body">Predicted by AI</AppText>
+          <AppText variant="caption">
+            These are the automatically detected values before your edits.
+          </AppText>
+
+          <MetaRow
+            label="Name"
+            value={params.predictedName ?? "Unknown item"}
+          />
+          <MetaRow
+            label="Category"
+            value={
+              params.predictedCategory
+                ? formatWardrobeCategory(
+                    params.predictedCategory as WardrobeCategory,
+                  )
+                : "Unknown category"
+            }
+          />
+          <MetaRow
+            label="Color"
+            value={params.predictedColor ?? "Unknown color"}
+          />
+          {!!params.predictedBrand && (
+            <MetaRow label="Brand" value={params.predictedBrand} />
+          )}
+        </AppCard>
+
+        <AppCard>
+          <AppText variant="body">Edit before saving</AppText>
+          <AppText variant="caption">
+            Update any detail that looks incorrect before adding this item to
+            your wardrobe.
+          </AppText>
+        </AppCard>
 
         <View style={{ gap: spacing.lg }}>
           <View style={{ gap: spacing.sm }}>
@@ -173,8 +219,8 @@ export default function AddWardrobeItemScreen() {
         </View>
 
         <AppButton
-          title="Save Dummy Item"
-          onPress={handleSubmit}
+          title="Save Item"
+          onPress={handleSave}
           disabled={isSubmitDisabled}
           loading={isSubmitting}
         />

@@ -5,6 +5,8 @@ export type WardrobeCategory =
   | "outerwear"
   | "accessory";
 
+export type WardrobeItemSource = "manual" | "ai";
+
 export type WardrobeItem = {
   id: string;
   name: string;
@@ -12,4 +14,5 @@ export type WardrobeItem = {
   color: string;
   imageUrl: string;
   brand?: string;
+  source?: WardrobeItemSource;
 };

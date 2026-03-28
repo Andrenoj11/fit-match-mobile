@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 
-import { useAppDispatch } from "@/app/store/hooks";
 import { setAuth } from "@/features/auth/store/auth.slice";
 import { tokenStorage } from "@/services/storage/tokenStorage";
+import { useAppDispatch } from "@/store/hooks";
 
 export function useAuthBootstrap() {
   const dispatch = useAppDispatch();

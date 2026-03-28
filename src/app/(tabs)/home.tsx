@@ -1,18 +1,19 @@
 import { Redirect, router, type Href } from "expo-router";
-import { View } from "react-native";
+import { Alert, View } from "react-native";
 
-import { useAppDispatch, useAppSelector } from "@/app/store/hooks";
 import { colors } from "@/core/theme/colors";
 import { spacing } from "@/core/theme/spacing";
 import { useMe } from "@/features/auth/hooks/useMe";
 import { clearAuth } from "@/features/auth/store/auth.slice";
 import { useRecommendations } from "@/features/recommendations/hooks/useRecommendations";
 import { clearWardrobe } from "@/features/wardrobe/store/wardrobe.slice";
+import { clearImportDrafts } from "@/features/wardrobe/store/wardrobeImport.slice";
 import { tokenStorage } from "@/services/storage/tokenStorage";
 import { AppButton } from "@/shared/components/ui/AppButton";
 import { AppCard } from "@/shared/components/ui/AppCard";
 import { AppScreen } from "@/shared/components/ui/AppScreen";
 import { AppText } from "@/shared/components/ui/AppText";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
 
 export default function HomeScreen() {
   const dispatch = useAppDispatch();
@@ -31,7 +32,30 @@ export default function HomeScreen() {
     await tokenStorage.removeAuth();
     dispatch(clearAuth());
     dispatch(clearWardrobe());
+    dispatch(clearImportDrafts());
     router.replace("/login");
+  };
+
+  const handleResetDemoData = () => {
+    Alert.alert(
+      "Reset demo data",
+      "This will clear the current wardrobe and import queue so the app can return to its default demo state. Continue?",
+      [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        {
+          text: "Reset",
+          style: "destructive",
+          onPress: () => {
+            dispatch(clearWardrobe());
+            dispatch(clearImportDrafts());
+            router.replace("/wardrobe");
+          },
+        },
+      ],
+    );
   };
 
   if (!isAuthenticated) {
@@ -44,7 +68,8 @@ export default function HomeScreen() {
         <View style={{ gap: spacing.sm }}>
           <AppText variant="title">Fit Match</AppText>
           <AppText variant="caption">
-            Build outfit recommendations from the wardrobe you already own.
+            Turn your wardrobe into outfit ideas with a simple, AI-assisted
+            flow.
           </AppText>
         </View>
 
@@ -56,12 +81,12 @@ export default function HomeScreen() {
           }}
         >
           <AppText variant="body" color={colors.primaryText}>
-            Your style, organized
+            Your wardrobe, ready to style
           </AppText>
 
           <AppText variant="caption" color={colors.primaryText}>
-            Keep your wardrobe ready, discover simple outfit ideas, and build
-            better looks from pieces you already have.
+            Organize your clothing, import items from photos, and explore
+            ready-made looks from the pieces you already own.
           </AppText>
 
           {!!authUser && (
@@ -87,7 +112,7 @@ export default function HomeScreen() {
           <AppText variant="body">Profile snapshot</AppText>
 
           {isMeLoading && (
-            <AppText variant="caption">Mengambil profile dummy...</AppText>
+            <AppText variant="caption">Loading profile...</AppText>
           )}
 
           {!!meErrorMessage && (
@@ -103,7 +128,12 @@ export default function HomeScreen() {
         </AppCard>
 
         <View style={{ gap: spacing.md }}>
-          <AppButton title="Logout" onPress={handleLogout} />
+          <AppButton
+            title="Reset Demo Data"
+            onPress={handleResetDemoData}
+            variant="secondary"
+          />
+          <AppButton title="Sign Out" onPress={handleLogout} />
         </View>
       </View>
     </AppScreen>

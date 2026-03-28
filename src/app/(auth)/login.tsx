@@ -1,7 +1,6 @@
 import { Redirect, type Href } from "expo-router";
 import { View } from "react-native";
 
-import { useAppSelector } from "@/app/store/hooks";
 import { colors } from "@/core/theme/colors";
 import { spacing } from "@/core/theme/spacing";
 import { useLoginForm } from "@/features/auth/hooks/useLoginForm";
@@ -10,6 +9,7 @@ import { AppCard } from "@/shared/components/ui/AppCard";
 import { AppInput } from "@/shared/components/ui/AppInput";
 import { AppScreen } from "@/shared/components/ui/AppScreen";
 import { AppText } from "@/shared/components/ui/AppText";
+import { useAppSelector } from "@/store/hooks";
 
 export default function LoginScreen() {
   const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
@@ -49,7 +49,7 @@ export default function LoginScreen() {
 
           <View style={{ gap: spacing.lg }}>
             <AppInput
-              placeholder="Masukkan email"
+              placeholder="Input email"
               value={email}
               onChangeText={setEmail}
               keyboardType="email-address"
@@ -57,7 +57,7 @@ export default function LoginScreen() {
             />
 
             <AppInput
-              placeholder="Masukkan password"
+              placeholder="Input password"
               value={password}
               onChangeText={setPassword}
               secureTextEntry
@@ -72,7 +72,7 @@ export default function LoginScreen() {
           </View>
 
           <AppButton
-            title="Masuk"
+            title="Login"
             onPress={handleSubmit}
             disabled={isLoginDisabled}
             loading={isSubmitting}

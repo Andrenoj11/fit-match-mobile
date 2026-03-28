@@ -1,8 +1,8 @@
 import { useMemo } from "react";
 
-import { useAppSelector } from "@/app/store/hooks";
 import { RecommendationItem } from "@/features/recommendations/api/recommendations.types";
 import { WardrobeCategory } from "@/features/wardrobe/api/wardrobe.types";
+import { useAppSelector } from "@/store/hooks";
 
 export function useRecommendations() {
   const wardrobeItems = useAppSelector((state) => state.wardrobe.items);

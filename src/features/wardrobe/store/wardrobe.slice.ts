@@ -23,6 +23,12 @@ const wardrobeSlice = createSlice({
     addWardrobeItem(state, action: PayloadAction<WardrobeItem>) {
       state.items = [action.payload, ...state.items];
     },
+    addWardrobeItems(state, action: PayloadAction<WardrobeItem[]>) {
+      state.items = [...action.payload, ...state.items];
+    },
+    removeWardrobeItem(state, action: PayloadAction<string>) {
+      state.items = state.items.filter((item) => item.id !== action.payload);
+    },
     clearWardrobe(state) {
       state.items = [];
       state.isInitialized = false;
@@ -30,6 +36,12 @@ const wardrobeSlice = createSlice({
   },
 });
 
-export const { setWardrobeItems, addWardrobeItem, clearWardrobe } =
-  wardrobeSlice.actions;
+export const {
+  setWardrobeItems,
+  addWardrobeItem,
+  addWardrobeItems,
+  removeWardrobeItem,
+  clearWardrobe,
+} = wardrobeSlice.actions;
+
 export const wardrobeReducer = wardrobeSlice.reducer;

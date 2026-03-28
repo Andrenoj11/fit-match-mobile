@@ -1,8 +1,8 @@
 import { useEffect } from "react";
 
-import { useAppDispatch, useAppSelector } from "@/app/store/hooks";
 import { getWardrobeItems } from "@/features/wardrobe/api/wardrobe.api";
 import { setWardrobeItems } from "@/features/wardrobe/store/wardrobe.slice";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
 
 export function useInitializeWardrobe() {
   const dispatch = useAppDispatch();
